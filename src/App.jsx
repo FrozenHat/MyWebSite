@@ -1,33 +1,37 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/eco.svg'
+import BasicScene from './components/threejs/BasicScene'
 import './App.css'
 
 function App() {
   const [count, setCount] = useState(0)
+  const [show3D, setShow3D] = useState(true)
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
+          <div className="App">
+      <header>
+        <h1>Мое 3D Портфолио</h1>
+        <button onClick={() => setShow3D(!show3D)}>
+          {show3D ? 'Скрыть 3D' : 'Показать 3D'}
         </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      </header>
+
+      <main>
+        {show3D && (
+          <div className="scene-container">
+            <BasicScene />
+            <p className="scene-hint">
+              Используйте мышь для вращения, колесико для zoom
+            </p>
+          </div>
+        )}
+
+        <section className="portfolio-content">
+          <h2>Мои проекты</h2>
+          {/* Ваш контент */}
+        </section>
+      </main>
+    </div>
     </>
   )
 }
