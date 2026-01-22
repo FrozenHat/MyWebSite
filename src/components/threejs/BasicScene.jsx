@@ -26,7 +26,6 @@ function AnimatedModel({ path = "/models/AnimTestModel.glb" }) {
   // Автоматический запуск анимации при загрузке
   useEffect(() => {
     if (actions && Object.keys(actions).length > 0) {
-      // Проигрываем первую найденную анимацию
       const actionName = Object.keys(actions)[0]
       actions[actionName]?.play()
       console.log('Запущена анимация:', actionName)
@@ -48,7 +47,20 @@ function AnimatedModel({ path = "/models/AnimTestModel.glb" }) {
 
 export default function BasicScene() {
   return (
-    <Canvas style={{ width: '100%', height: '500px' }}>
+    <Canvas 
+      // Стили для фона
+      style={{ 
+        width: '100vw', 
+        height: '100vh',
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        zIndex: 0
+      }}
+      // Указываем источник событий
+      eventSource={document.body}
+      camera={{ position: [0, 0, 5], fov: 75 }}
+    >
       <Suspense fallback={null}>
         <Environment 
           files="/hdri/studio.exr"
@@ -69,7 +81,21 @@ export default function BasicScene() {
           />
         </Box>
         
-        <OrbitControls />
+        {/* OrbitControls для фона */}
+        <OrbitControls 
+          enableZoom={true}
+          enablePan={true}
+          enableRotate={true}
+          zoomSpeed={0.6}
+          rotateSpeed={0.8}
+          panSpeed={0.8}
+          // Дополнительные настройки для лучшего UX
+          maxPolarAngle={Math.PI}
+          minDistance={3}
+          maxDistance={15}
+          // Указываем элемент для событий мыши
+          domElement={document.body}
+        />
       </Suspense>
     </Canvas>
   )
