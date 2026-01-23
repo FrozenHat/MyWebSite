@@ -1,90 +1,150 @@
-/* Сброс стандартных отступов */
+/* App.css - исправленная часть для header */
+
+/* Хедер */
+.header {
+  background: transparent;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 2rem;
+  position: relative;
+  z-index: 100;
+}
+
+.header-title {
+  margin: 0;
+  font-size: 0; /* Скрываем оригинальный текст */
+}
+
+/* Контейнер для TextMask */
+.text-mask-container {
+  display: inline-block;
+  position: relative;
+  border-radius: 5px;
+  overflow: hidden;
+  transition: transform 0.3s ease;
+}
+
+.text-mask-container.main-title {
+  padding: 10px 20px;
+  
+}
+
+.text-mask-container.nav-link {
+  padding: 8px 16px;
+  /* background: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(3px); */
+}
+
+.text-mask-container:hover {
+  transform: translateY(-2px);
+}
+
+.text-mask-canvas {
+  border-radius: inherit;
+}
+
+.header-nav {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.header-nav a {
+  text-decoration: none;
+  display: inline-block;
+  transition: all 0.3s ease;
+  border-radius: 5px;
+  position: relative;
+  overflow: hidden;
+}
+
+.header-nav a::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(3px);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: -1;
+}
+
+.header-nav a:hover::before {
+  opacity: 0.1;
+}
+
+/* .header-nav a:hover .text-mask-container {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+} */
+
+/* Улучшаем читаемость при медленной загрузке */
+/* .text-mask-container::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: inherit;
+  font-weight: inherit;
+  font-family: inherit;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+} */
+
+.text-mask-container.loading::after {
+  opacity: 1;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+/* Футер (исправленный) */
+.footer {
+  text-align: center;
+  padding: 1.5rem;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+  position: fixed;
+  width: 100%;
+  bottom: 0;
+  left: 0;
+  color: white;
+  z-index: 50;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Остальные стили остаются без изменений */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-/* Теперь BasicScene сам отвечает за позиционирование фона */
-/* Убираем .scene-background класс, так как Canvas сам fixed */
-
-/* Контент поверх фона */
 .content-overlay {
   position: relative;
-  z-index: 10; /* Выше чем Canvas (zIndex: 0) */
+  z-index: 10;
   min-height: 100vh;
   color: white;
-  /* Полупрозрачный оверлей для читаемости */
-  background: rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(1px);
-  /* Разрешаем события мыши для кликабельных элементов */
   pointer-events: none;
 }
 
-/* Кликабельные элементы */
 .content-overlay * {
   pointer-events: auto;
 }
 
-/* Хедер */
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1.5rem 2rem;
-  background: rgba(0, 0, 0, 0.7);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.header h1 {
-  font-size: 1.8rem;
-  background: linear-gradient(90deg, #00dbde, #fc00ff);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.header nav {
-  display: flex;
-  gap: 2rem;
-}
-
-.header nav a {
-  color: white;
-  text-decoration: none;
-  transition: color 0.3s;
-  padding: 0.5rem 1rem;
-  border-radius: 5px;
-}
-
-.header nav a:hover {
-  color: #00dbde;
-  background: rgba(255, 255, 255, 0.1);
-}
-
-/* Основной контент */
 .main-content {
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem;
-  pointer-events: auto; /* Разрешаем события внутри */
-}
-
-/* Герой-секция */
-.hero {
-  text-align: center;
-  padding: 6rem 0;
-}
-
-.hero h2 {
-  font-size: 3rem;
-  margin-bottom: 1rem;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-}
-
-.hero p {
-  font-size: 1.2rem;
-  margin-bottom: 2rem;
-  opacity: 0.9;
+  pointer-events: auto;
 }
 
 .cta-button {
@@ -101,93 +161,4 @@
 .cta-button:hover {
   transform: translateY(-2px);
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
-}
-
-/* Секции */
-.section {
-  padding: 4rem 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(0, 0, 0, 0.5); /* Для лучшей читаемости */
-  border-radius: 10px;
-  margin: 2rem 0;
-  padding: 2rem;
-}
-
-.section h3 {
-  font-size: 2rem;
-  margin-bottom: 2rem;
-  color: #00dbde;
-}
-
-/* Сетка проектов */
-.projects-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2rem;
-  margin-top: 2rem;
-}
-
-.project-card {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
-  padding: 2rem;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  transition: transform 0.3s, background 0.3s;
-  height: 200px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.project-card:hover {
-  transform: translateY(-5px);
-  background: rgba(255, 255, 255, 0.2);
-}
-
-/* Футер */
-.footer {
-  text-align: center;
-  padding: 2rem;
-  background: rgba(0, 0, 0, 0.7);
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  margin-top: 4rem;
-}
-
-/* Адаптивность */
-@media (max-width: 768px) {
-  .header {
-    flex-direction: column;
-    gap: 1rem;
-  }
-  
-  .hero h2 {
-    font-size: 2rem;
-  }
-  
-  .projects-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* Подсказка для управления 3D */
-.scene-hint {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background: rgba(0, 0, 0, 0.7);
-  color: white;
-  padding: 10px 15px;
-  border-radius: 20px;
-  font-size: 0.9rem;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  z-index: 1000; /* Выше всего */
-  pointer-events: none;
-  animation: fadeIn 1s ease-out;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
 }
