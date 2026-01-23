@@ -17,7 +17,7 @@ function AnimatedModel({ path = "/models/AnimTestModel.glb" }) {
         clearcoat: 0.4,
         metalness: 0.85,
         clearcoatRoughness: 1.0,
-        transmission: 0.12,
+        transmission: 0.0,
         transparent: false
       })
     }
@@ -63,7 +63,7 @@ export default function BasicScene() {
     >
       <Suspense fallback={null}>
         <Environment 
-          files="/hdri/studio.exr"
+          files="/hdri/SceenLight.exr"
           background={true}
           environmentIntensity={0.6}
         />
@@ -72,15 +72,7 @@ export default function BasicScene() {
         <pointLight position={[-5, 3, 8]} intensity={5}/>
         
         <AnimatedModel path="/models/AnimTestModel.glb" />
-        
-        <Box position={[-1.5, 0, 0]}>
-          <meshStandardMaterial 
-            color="orange" 
-            metalness={0.8}
-            roughness={0.2}
-          />
-        </Box>
-        
+           
         {/* OrbitControls для фона */}
         <OrbitControls 
           enableZoom={true}
