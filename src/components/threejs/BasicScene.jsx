@@ -40,6 +40,7 @@ function AnimatedModel({ path = "/models/AnimTestModel.glb" }) {
         object={scene} 
         position={[0, 0, 0]}
         scale={1}
+        
       />
     </group>
   )
@@ -59,19 +60,20 @@ export default function BasicScene() {
       }}
       // Указываем источник событий
       eventSource={document.body}
-      camera={{ position: [0, 0, 5], fov: 75 }}
+      camera={{ position: [1, 0, 0], fov: 60}}
     >
       <Suspense fallback={null}>
         <Environment 
           files="/hdri/SceenLight.exr"
           background={true}
           environmentIntensity={0.6}
+          
         />
         
         <pointLight position={[5, 4, 4]} intensity={5}/>
         <pointLight position={[-5, 3, 8]} intensity={5}/>
         
-        <AnimatedModel path="/models/AnimTestModel.glb" />
+        <AnimatedModel  path="/models/AnimTestModel.glb" />
            
         {/* OrbitControls для фона */}
         <OrbitControls 
