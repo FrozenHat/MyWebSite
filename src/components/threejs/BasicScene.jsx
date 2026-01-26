@@ -64,7 +64,7 @@ export default function BasicScene() {
     >
       <Suspense fallback={null}>
         <Environment 
-          files="/hdri/SceenLight.exr"
+          files="/hdri/SceenLight2.exr"
           background={true}
           environmentIntensity={0.6}
           
