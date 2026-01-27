@@ -162,3 +162,97 @@
   transform: translateY(-2px);
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
 }
+/* Стили для панели управления анимацией */
+.animation-controls {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 200; /* Выше чем content-overlay (z-index: 10) */
+  background: rgba(0, 0, 0, 0.8);
+  padding: 20px;
+  border-radius: 10px;
+  color: white;
+  font-family: 'Segoe UI', Roboto, sans-serif;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  pointer-events: auto !important; /* Принудительно включаем события */
+}
+
+.animation-controls h3 {
+  margin: 0 0 15px 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.controls-buttons {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.play-pause-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  pointer-events: auto !important;
+}
+
+.play-pause-btn.playing {
+  background: #44ff44;
+}
+
+.play-pause-btn.paused {
+  background: #ff4444;
+}
+
+.play-pause-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+}
+
+.reset-btn {
+  padding: 8px 16px;
+  background: #666;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  pointer-events: auto !important;
+}
+
+.reset-btn:hover {
+  background: #777;
+  transform: translateY(-1px);
+}
+
+.progress-control {
+  pointer-events: auto !important;
+}
+
+.progress-control label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.progress-slider {
+  width: 100%;
+  cursor: pointer;
+  pointer-events: auto !important;
+}
+
+/* Измените z-index для content-overlay, чтобы панель управления была выше */
+.content-overlay {
+  position: relative;
+  z-index: 10; /* Теперь ниже чем панель управления */
+  min-height: 100vh;
+  color: white;
+  pointer-events: none;
+}

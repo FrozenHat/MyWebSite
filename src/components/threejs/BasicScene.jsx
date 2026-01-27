@@ -1,38 +1,149 @@
 import { Canvas } from '@react-three/fiber'
-import { OrbitControls, Box, useGLTF, Environment, useAnimations } from '@react-three/drei'
-import { Suspense, useEffect, useRef } from 'react'
+import { OrbitControls, useGLTF, Environment, useAnimations } from '@react-three/drei'
+import { Suspense, useEffect, useRef, useCallback } from 'react'
 import * as THREE from 'three'
 
-function AnimatedModel({ path = "/models/AnimTestModel.glb" }) {
+function AnimatedModel({ 
+  path = "/models/AnimTestModel.glb", 
+  isPlaying, 
+  animationTime,
+  animationDuration,
+  onAnimationLoad,
+  onTimeUpdate
+}) {
   const group = useRef()
+  const mixerRef = useRef()
+  const clockRef = useRef(new THREE.Clock())
+  const animationFrameId = useRef()
+  const lastTimeRef = useRef(0)
+  
   const { scene, animations } = useGLTF(path)
-  const { actions } = useAnimations(animations, group)
+  const { actions, mixer } = useAnimations(animations, group)
 
-  // Применяем материалы ко всем мешам
-  scene.traverse((child) => {
-    if (child.isMesh) {
-      child.material = new THREE.MeshPhysicalMaterial({
-        color: '#c4c9d1',
-        roughness: 0.14,
-        clearcoat: 0.4,
-        metalness: 0.85,
-        clearcoatRoughness: 1.0,
-        transmission: 0.0,
-        transparent: false
-      })
-    }
-  })
-
-  // Автоматический запуск анимации при загрузке
+  // Инициализация анимации
   useEffect(() => {
-    if (actions && Object.keys(actions).length > 0) {
+    mixerRef.current = mixer
+    
+    if (animations && animations.length > 0) {
+      console.log('Загружены анимации:', animations.map(a => a.name))
+      
+      // Получаем длительность первой анимации
+      const duration = animations[0].duration
+      console.log('Длительность анимации:', duration)
+      
+      if (onAnimationLoad) {
+        onAnimationLoad(duration)
+      }
+      
+      // Настраиваем анимацию
       const actionName = Object.keys(actions)[0]
-      actions[actionName]?.play()
-      console.log('Запущена анимация:', actionName)
-    } else {
-      console.warn('Анимации не найдены в модели')
+      const action = actions[actionName]
+      
+      if (action) {
+        // Начинаем с паузы
+        action.play()
+        action.paused = true
+        action.time = animationTime
+        mixerRef.current.update(0)
+      }
     }
-  }, [actions])
+    
+    return () => {
+      if (mixerRef.current) {
+        mixerRef.current.stopAllAction()
+      }
+    }
+  }, [actions, animations, onAnimationLoad, animationTime])
+
+  // Применяем материалы
+  useEffect(() => {
+    scene.traverse((child) => {
+      if (child.isMesh) {
+        child.material = new THREE.MeshPhysicalMaterial({
+          color: '#c4c9d1',
+          roughness: 0.14,
+          clearcoat: 0.4,
+          metalness: 0.85,
+          clearcoatRoughness: 1.0,
+          transmission: 0.0,
+          transparent: false
+        })
+      }
+    })
+  }, [scene])
+
+  // Функция обновления анимации
+  const updateAnimation = useCallback(() => {
+    if (!mixerRef.current || !isPlaying) return
+    
+    const delta = clockRef.current.getDelta()
+    mixerRef.current.update(delta)
+    
+    // Получаем текущее время из активной анимации
+    if (mixerRef.current._actions && mixerRef.current._actions.length > 0) {
+      const currentTime = mixerRef.current._actions[0].time
+      
+      // Проверяем, не закончилась ли анимация
+      if (currentTime >= animationDuration) {
+        setIsPlaying(false)
+        return
+      }
+      
+      if (onTimeUpdate && Math.abs(currentTime - lastTimeRef.current) > 0.01) {
+        lastTimeRef.current = currentTime
+        onTimeUpdate(currentTime)
+      }
+    }
+    
+    animationFrameId.current = requestAnimationFrame(updateAnimation)
+  }, [isPlaying, animationDuration, onTimeUpdate])
+
+  // Управление воспроизведением
+  useEffect(() => {
+    if (!mixerRef.current || !actions) return
+    
+    const actionName = Object.keys(actions)[0]
+    const action = actions[actionName]
+    
+    if (!action) return
+    
+    if (isPlaying) {
+      // Включаем воспроизведение
+      action.paused = false
+      action.time = animationTime
+      clockRef.current.start()
+      lastTimeRef.current = animationTime
+      updateAnimation()
+    } else {
+      // Останавливаем
+      action.paused = true
+      if (animationFrameId.current) {
+        cancelAnimationFrame(animationFrameId.current)
+        animationFrameId.current = null
+      }
+    }
+    
+    return () => {
+      if (animationFrameId.current) {
+        cancelAnimationFrame(animationFrameId.current)
+      }
+    }
+  }, [isPlaying, actions, animationTime, updateAnimation])
+
+  // Установка времени при изменении animationTime
+  useEffect(() => {
+    if (!mixerRef.current || !actions || isPlaying) return
+    
+    const actionName = Object.keys(actions)[0]
+    const action = actions[actionName]
+    
+    if (action) {
+      action.paused = true
+      action.time = Math.min(animationTime, animationDuration)
+      mixerRef.current.update(0)
+      lastTimeRef.current = animationTime
+    }
+  }, [animationTime, isPlaying, actions, animationDuration])
 
   return (
     <group ref={group}>
@@ -40,16 +151,20 @@ function AnimatedModel({ path = "/models/AnimTestModel.glb" }) {
         object={scene} 
         position={[0, 0, 0]}
         scale={1}
-        
       />
     </group>
   )
 }
 
-export default function BasicScene() {
+export default function BasicScene({ 
+  isPlaying, 
+  animationTime,
+  animationDuration,
+  onAnimationLoad,
+  onTimeUpdate
+}) {
   return (
     <Canvas 
-      // Стили для фона
       style={{ 
         width: '100vw', 
         height: '100vh',
@@ -58,24 +173,27 @@ export default function BasicScene() {
         left: 0,
         zIndex: 0
       }}
-      // Указываем источник событий
-      eventSource={document.body}
-      camera={{ position: [1, 0, 0], fov: 60}}
+      camera={{ position: [1, 0, 0], fov: 60 }}
     >
       <Suspense fallback={null}>
         <Environment 
           files="/hdri/SceenLight2.exr"
           background={true}
           environmentIntensity={0.6}
-          
         />
         
         <pointLight position={[5, 4, 4]} intensity={5}/>
         <pointLight position={[-5, 3, 8]} intensity={5}/>
         
-        <AnimatedModel  path="/models/AnimTestModel.glb" />
+        <AnimatedModel 
+          path="/models/AnimTestModel.glb"
+          isPlaying={isPlaying}
+          animationTime={animationTime}
+          animationDuration={animationDuration}
+          onAnimationLoad={onAnimationLoad}
+          onTimeUpdate={onTimeUpdate}
+        />
            
-        {/* OrbitControls для фона */}
         <OrbitControls 
           enableZoom={true}
           enablePan={true}
@@ -83,12 +201,9 @@ export default function BasicScene() {
           zoomSpeed={0.6}
           rotateSpeed={0.8}
           panSpeed={0.8}
-          // Дополнительные настройки для лучшего UX
           maxPolarAngle={Math.PI}
           minDistance={3}
           maxDistance={15}
-          // Указываем элемент для событий мыши
-          domElement={document.body}
         />
       </Suspense>
     </Canvas>
