@@ -57,28 +57,25 @@ function AnimatedModel({
 
   /useEffect(() => {
   if (!scene) return;
-   const textureLoader = new THREE.TextureLoader();
-
+  const textureLoader = new THREE.TextureLoader();
+  const vecor2= new THREE.Vector2(0.05,0.02);
   const normalMapTexture = textureLoader.load("./models/textures/normal.jpg");
   normalMapTexture.wrapS = THREE.RepeatWrapping;
   normalMapTexture.wrapT = THREE.RepeatWrapping;
-  normalMapTexture.repeat.set(2,2);
+  normalMapTexture.repeat.set(5,6);
   const physicalMaterial = new THREE.MeshPhysicalMaterial({
-    color: '#c9d7ee',
+    color: '#dde5f2',
     transmission: 0.9,
-    thickness: 0.1,
-    roughness: 0.1,
+    thickness: 0.05,
+    roughness: 0.05,
     normalMap: normalMapTexture,
-    
+    normalScale:vecor2,
     // clearcoatNormalMap: normalMapTexture,
-    reflectivity:0.5,
-    ior:1.45,
-    anisotropicBlur:2,
-    chromaticAberration: 0.8,
-    distortion:2,
+    reflectivity:0.0,
+    ior:1.45,   
     clearcoat:0.8,
-    clearcoatRoughness:1,
-    backside: true
+    clearcoatRoughness:0.05,
+   
   });
 
   scene.traverse((child) => {
@@ -207,7 +204,7 @@ export default function BasicScene({
         <Environment 
           files="/hdri/SceenLight2.exr"
           background={true}
-          environmentIntensity={0.6}
+          environmentIntensity={0.4}
         />
         
         <AnimatedModel 
