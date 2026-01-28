@@ -4,7 +4,7 @@ import { Suspense, useEffect, useRef, useCallback } from 'react'
 import * as THREE from 'three'
 
 function AnimatedModel({ 
-  path = "/models/AnimTestModel.glb", 
+  path = "/models/MyWebSite3.glb", 
   isPlaying, 
   animationTime,
   animationDuration,
@@ -55,22 +55,49 @@ function AnimatedModel({
     }
   }, [actions, animations, onAnimationLoad, animationTime])
 
-  // Применяем материалы
-  useEffect(() => {
-    scene.traverse((child) => {
-      if (child.isMesh) {
-        child.material = new THREE.MeshPhysicalMaterial({
-          color: '#c4c9d1',
-          roughness: 0.14,
-          clearcoat: 0.4,
-          metalness: 0.85,
-          clearcoatRoughness: 1.0,
-          transmission: 0.0,
-          transparent: false
-        })
+  /useEffect(() => {
+  if (!scene) return;
+   const textureLoader = new THREE.TextureLoader();
+
+  const normalMapTexture = textureLoader.load("src/textures/normal.jpg");
+  normalMapTexture.wrapS = THREE.RepeatWrapping;
+  normalMapTexture.wrapT = THREE.RepeatWrapping;
+  normalMapTexture.repeat.set(1,1);
+  const physicalMaterial = new THREE.MeshPhysicalMaterial({
+    color: '#c9d7ee',
+    transmission: 0.9,
+    thickness: 0.1,
+    roughness: 0.2,
+    normalMap: normalMapTexture,
+    clearcoatNormalMap: normalMapTexture,
+    reflectivity:0.5,
+    ior:1.45,
+    anisotropicBlur:0.0,
+    chromaticAberration: 2.4,
+    distortion:2,
+    clearcoat:0.8,
+    clearcoatRoughness:0.05,
+    backside: true
+  });
+
+  scene.traverse((child) => {
+    if (child.isMesh) {
+      // Если материал - массив
+      if (Array.isArray(child.material)) {
+        child.material = child.material.map((material) => {
+          if (material.name === "Glass") {
+            return physicalMaterial.clone();
+          }
+          return material;
+        });
       }
-    })
-  }, [scene])
+      // Если материал одиночный
+      else if (child.material.name === "Glass") {
+        child.material = physicalMaterial;
+      }
+    }
+  });
+}, [scene]);
 
   // Функция обновления анимации
   const updateAnimation = useCallback(() => {
@@ -186,7 +213,7 @@ export default function BasicScene({
         <pointLight position={[-5, 3, 8]} intensity={5}/>
         
         <AnimatedModel 
-          path="/models/AnimTestModel.glb"
+          path="/models/MyWebSite3.glb"
           isPlaying={isPlaying}
           animationTime={animationTime}
           animationDuration={animationDuration}
