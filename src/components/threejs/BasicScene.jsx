@@ -59,24 +59,25 @@ function AnimatedModel({
   if (!scene) return;
    const textureLoader = new THREE.TextureLoader();
 
-  const normalMapTexture = textureLoader.load("src/textures/normal.jpg");
+  const normalMapTexture = textureLoader.load("./models/textures/normal.jpg");
   normalMapTexture.wrapS = THREE.RepeatWrapping;
   normalMapTexture.wrapT = THREE.RepeatWrapping;
-  normalMapTexture.repeat.set(1,1);
+  normalMapTexture.repeat.set(2,2);
   const physicalMaterial = new THREE.MeshPhysicalMaterial({
     color: '#c9d7ee',
     transmission: 0.9,
     thickness: 0.1,
-    roughness: 0.2,
+    roughness: 0.1,
     normalMap: normalMapTexture,
-    clearcoatNormalMap: normalMapTexture,
+    
+    // clearcoatNormalMap: normalMapTexture,
     reflectivity:0.5,
     ior:1.45,
-    anisotropicBlur:0.0,
-    chromaticAberration: 2.4,
+    anisotropicBlur:2,
+    chromaticAberration: 0.8,
     distortion:2,
     clearcoat:0.8,
-    clearcoatRoughness:0.05,
+    clearcoatRoughness:1,
     backside: true
   });
 
@@ -200,7 +201,7 @@ export default function BasicScene({
         left: 0,
         zIndex: 0
       }}
-      camera={{ position: [1, 0, 0], fov: 60 }}
+      camera={{ position: [-1.6, 0.8, 0], fov: 60 }}
     >
       <Suspense fallback={null}>
         <Environment 
@@ -208,9 +209,6 @@ export default function BasicScene({
           background={true}
           environmentIntensity={0.6}
         />
-        
-        <pointLight position={[5, 4, 4]} intensity={5}/>
-        <pointLight position={[-5, 3, 8]} intensity={5}/>
         
         <AnimatedModel 
           path="/models/MyWebSite3.glb"
@@ -229,8 +227,8 @@ export default function BasicScene({
           rotateSpeed={0.8}
           panSpeed={0.8}
           maxPolarAngle={Math.PI}
-          minDistance={3}
-          maxDistance={15}
+          minDistance={2}
+          maxDistance={6}
         />
       </Suspense>
     </Canvas>
