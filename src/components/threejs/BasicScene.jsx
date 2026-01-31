@@ -1,7 +1,8 @@
 import { Canvas } from '@react-three/fiber'
-import { OrbitControls, useGLTF, Environment, useAnimations } from '@react-three/drei'
+import { OrbitControls, useGLTF, Environment, useAnimations, useTexture } from '@react-three/drei'
 import { Suspense, useEffect, useRef, useCallback } from 'react'
 import * as THREE from 'three'
+import { MaterialApplier, Glass } from './materials' // Импортируем наши компоненты материалов
 
 function AnimatedModel({ 
   path = "/models/AnimTestModel3.glb", 
@@ -19,6 +20,25 @@ function AnimatedModel({
   
   const { scene, animations } = useGLTF(path)
   const { actions, mixer } = useAnimations(animations, group)
+
+  // Загружаем текстуры с помощью useTexture из drei (более эффективно)
+  const [roughnessMapTexture, normalMapTexture] = useTexture([
+    "./models/textures/roughness.jpg",
+    "./models/textures/normal.jpg"
+  ])
+
+  // Настраиваем текстуры после загрузки
+  useEffect(() => {
+    if (roughnessMapTexture && normalMapTexture) {
+      roughnessMapTexture.wrapS = THREE.RepeatWrapping
+      roughnessMapTexture.wrapT = THREE.RepeatWrapping
+      roughnessMapTexture.repeat.set(8, 8)
+      
+      normalMapTexture.wrapS = THREE.RepeatWrapping
+      normalMapTexture.wrapT = THREE.RepeatWrapping
+      normalMapTexture.repeat.set(5, 5)
+    }
+  }, [roughnessMapTexture, normalMapTexture])
 
   // Инициализация анимации
   useEffect(() => {
@@ -55,56 +75,6 @@ function AnimatedModel({
     }
   }, [actions, animations, onAnimationLoad, animationTime])
 
-  /useEffect(() => {
-  if (!scene) return;
-  const textureLoader = new THREE.TextureLoader();
-  const vecor2= new THREE.Vector2(0.05,0.02);
-  
-   const roughnessMapTexture = textureLoader.load("./models/textures/roughness.jpg");
-  roughnessMapTexture.wrapS = THREE.RepeatWrapping;
-  roughnessMapTexture.wrapT = THREE.RepeatWrapping;
-  roughnessMapTexture.repeat.set(8,8);
-  const normalMapTexture = textureLoader.load("./models/textures/normal.jpg");
-   normalMapTexture.wrapS = THREE.RepeatWrapping;
-  normalMapTexture.wrapT = THREE.RepeatWrapping;
-  normalMapTexture.repeat.set(5,5);
-  const physicalMaterial = new THREE.MeshPhysicalMaterial({
-    color: '#8e96a4',
-    transmission: 0.98,
-    roughnessMap:roughnessMapTexture,
-    thickness: 0.125,
-    roughness: 0.1,
-    normalMap: normalMapTexture,
-    normalScale:vecor2,
-    // clearcoatNormalMap: normalMapTexture,
-    reflectivity:0.0,
-    ior:1.45,   
-    clearcoat:0.8,
-    clearcoatRoughnessMap:roughnessMapTexture,
-    clearcoatRoughness:0.4,
-    
-       
-  });
-
-  scene.traverse((child) => {
-    if (child.isMesh) {
-      // Если материал - массив
-      if (Array.isArray(child.material)) {
-        child.material = child.material.map((material) => {
-          if (material.name === "Glass") {
-            return physicalMaterial.clone();
-          }
-          return material;
-        });
-      }
-      // Если материал одиночный
-      else if (child.material.name === "Glass") {
-        child.material = physicalMaterial;
-      }
-    }
-  });
-}, [scene]);
-
   // Функция обновления анимации
   const updateAnimation = useCallback(() => {
     if (!mixerRef.current || !isPlaying) return
@@ -118,7 +88,8 @@ function AnimatedModel({
       
       // Проверяем, не закончилась ли анимация
       if (currentTime >= animationDuration) {
-        setIsPlaying(false)
+        // Останавливаем воспроизведение через диспетчер
+        if (window.setIsPlaying) window.setIsPlaying(false)
         return
       }
       
@@ -185,6 +156,50 @@ function AnimatedModel({
         position={[0, 0, 0]}
         scale={1}
       />
+      
+      {/* Применяем материал Glass к элементам с именем "Glass" */}
+      <MaterialApplier
+        modelRef={group}
+        target="material:Glass"
+        preset={{
+          type: 'MeshPhysicalMaterial',
+          params: {
+            color: '#8e96a4',
+            transmission: 0.98,
+            roughnessMap: roughnessMapTexture,
+            thickness: 0.125,
+            roughness: 0.1,
+            normalMap: normalMapTexture,
+            normalScale: new THREE.Vector2(0.05, 0.02),
+            reflectivity: 0.0,
+            ior: 1.45,
+            clearcoat: 0.8,
+            clearcoatRoughnessMap: roughnessMapTexture,
+            clearcoatRoughness: 0.4
+          }
+        }}
+        debug={true}
+        onApplied={(count) => console.log(`Применен стеклянный материал к ${count} элементам`)}
+      />
+      
+      {/* Альтернативный вариант с готовым компонентом Glass */}
+      {/* <Glass 
+        modelRef={group}
+        target="material:Glass"
+        color="#8e96a4"
+        transmission={0.98}
+        roughnessMap={roughnessMapTexture}
+        thickness={0.125}
+        roughness={0.1}
+        normalMap={normalMapTexture}
+        normalScale={new THREE.Vector2(0.05, 0.02)}
+        reflectivity={0.0}
+        ior={1.45}
+        clearcoat={0.8}
+        clearcoatRoughnessMap={roughnessMapTexture}
+        clearcoatRoughness={0.4}
+      /> */}
+  
     </group>
   )
 }
@@ -207,6 +222,7 @@ export default function BasicScene({
         zIndex: 0
       }}
       camera={{ position: [-1.6, 0.8, 0], fov: 60 }}
+      shadows
     >
       <Suspense fallback={null}>
         <Environment 
@@ -214,6 +230,17 @@ export default function BasicScene({
           background={true}
           environmentIntensity={0.4}
         />
+        
+        {/* Добавляем освещение для лучшего отображения PBR материалов */}
+        <ambientLight intensity={0.3} />
+        <directionalLight 
+          position={[5, 5, 5]} 
+          intensity={1.2} 
+          castShadow
+          shadow-mapSize-width={1024}
+          shadow-mapSize-height={1024}
+        />
+        <pointLight position={[-5, 3, 2]} intensity={0.5} color="#88aaff" />
         
         <AnimatedModel 
           path="/models/AnimTestModel3.glb"
