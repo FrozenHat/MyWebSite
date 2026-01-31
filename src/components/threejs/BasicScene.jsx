@@ -4,7 +4,7 @@ import { Suspense, useEffect, useRef, useCallback } from 'react'
 import * as THREE from 'three'
 
 function AnimatedModel({ 
-  path = "/models/MyWebSite3.glb", 
+  path = "/models/AnimTestModel3.glb", 
   isPlaying, 
   animationTime,
   animationDuration,
@@ -59,23 +59,31 @@ function AnimatedModel({
   if (!scene) return;
   const textureLoader = new THREE.TextureLoader();
   const vecor2= new THREE.Vector2(0.05,0.02);
+  
+   const roughnessMapTexture = textureLoader.load("./models/textures/roughness.jpg");
+  roughnessMapTexture.wrapS = THREE.RepeatWrapping;
+  roughnessMapTexture.wrapT = THREE.RepeatWrapping;
+  roughnessMapTexture.repeat.set(8,8);
   const normalMapTexture = textureLoader.load("./models/textures/normal.jpg");
-  normalMapTexture.wrapS = THREE.RepeatWrapping;
+   normalMapTexture.wrapS = THREE.RepeatWrapping;
   normalMapTexture.wrapT = THREE.RepeatWrapping;
-  normalMapTexture.repeat.set(5,6);
+  normalMapTexture.repeat.set(5,5);
   const physicalMaterial = new THREE.MeshPhysicalMaterial({
-    color: '#dde5f2',
-    transmission: 0.9,
-    thickness: 0.05,
-    roughness: 0.05,
+    color: '#8e96a4',
+    transmission: 0.98,
+    roughnessMap:roughnessMapTexture,
+    thickness: 0.125,
+    roughness: 0.1,
     normalMap: normalMapTexture,
     normalScale:vecor2,
     // clearcoatNormalMap: normalMapTexture,
     reflectivity:0.0,
     ior:1.45,   
     clearcoat:0.8,
-    clearcoatRoughness:0.05,
-   
+    clearcoatRoughnessMap:roughnessMapTexture,
+    clearcoatRoughness:0.4,
+    
+       
   });
 
   scene.traverse((child) => {
@@ -202,13 +210,13 @@ export default function BasicScene({
     >
       <Suspense fallback={null}>
         <Environment 
-          files="/hdri/SceenLight2.exr"
+          files="/hdri/studio.exr"
           background={true}
           environmentIntensity={0.4}
         />
         
         <AnimatedModel 
-          path="/models/MyWebSite3.glb"
+          path="/models/AnimTestModel3.glb"
           isPlaying={isPlaying}
           animationTime={animationTime}
           animationDuration={animationDuration}
@@ -224,7 +232,7 @@ export default function BasicScene({
           rotateSpeed={0.8}
           panSpeed={0.8}
           maxPolarAngle={Math.PI}
-          minDistance={2}
+          minDistance={1}
           maxDistance={6}
         />
       </Suspense>

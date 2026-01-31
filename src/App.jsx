@@ -89,14 +89,14 @@ function App() {
             onClick={handlePlayPause}
             className={`play-pause-btn ${isPlaying ? 'paused' : 'playing'}`}
           >
-            {isPlaying ? '⏸️ Пауза' : '▶️ Воспроизвести'}
+            {isPlaying ? ' Пауза' : ' Воспроизвести'}
           </button>
           
           <button 
             onClick={handleReset}
             className="reset-btn"
           >
-            🔄 Сбросить
+             Сбросить
           </button>
         </div>
       </div>
@@ -149,7 +149,7 @@ function App() {
         </header>
 
         <footer className="footer">
-          <p>© 2026 Мое портфолио. Все права защищены.</p>
+          <p>© 2026 Примеры. </p>
         </footer>
       </div>
     </>
