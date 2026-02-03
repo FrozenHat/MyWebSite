@@ -1,4 +1,4 @@
-// App.jsx - упрощенная версия
+// App.jsx
 import BasicScene from './components/threejs/BasicScene'
 import TextMask from './components/TextMask'
 import './App.css'
