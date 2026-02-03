@@ -256,3 +256,188 @@
   color: white;
   pointer-events: none;
 }
+
+/* Стили для панели управления анимацией внутри Three.js сцены */
+.animation-controls-overlay {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  /* transform: translateX(-50%); */
+  z-index: 1000;
+  pointer-events: auto !important;
+  width: 100%;
+  max-width: 400px;
+}
+
+.animation-controls {
+  background: rgba(0, 0, 0, 0.85);
+  padding: 20px;
+  border-radius: 12px;
+  color: white;
+  font-family: 'Segoe UI', Roboto, sans-serif;
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  pointer-events: auto !important;
+}
+
+.animation-controls h3 {
+  margin: 0 0 16px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+
+.time-display {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  font-family: 'Monaco', 'Consolas', monospace;
+  font-size: 14px;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.time-display span {
+  opacity: 0.9;
+}
+
+.time-display span:nth-child(2) {
+  opacity: 0.5;
+  margin: 0 4px;
+}
+
+.time-display span:nth-child(4) {
+  opacity: 0.7;
+  font-size: 12px;
+  margin-left: 8px;
+  color: #64ffda;
+}
+
+.progress-control {
+  margin-bottom: 16px;
+}
+
+.progress-slider {
+  width: 100%;
+  height: 4px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+  pointer-events: auto !important;
+}
+
+.progress-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #64ffda;
+  cursor: pointer;
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 0 8px rgba(100, 255, 218, 0.5);
+  transition: all 0.2s ease;
+}
+
+.progress-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 12px rgba(100, 255, 218, 0.8);
+}
+
+.progress-slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #64ffda;
+  cursor: pointer;
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 0 8px rgba(100, 255, 218, 0.5);
+}
+
+.controls-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.play-pause-btn, .reset-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 120px;
+  pointer-events: auto !important;
+}
+
+.play-pause-btn {
+  background: linear-gradient(135deg, #00c6ff, #0072ff);
+  box-shadow: 0 4px 12px rgba(0, 114, 255, 0.3);
+}
+
+.play-pause-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 114, 255, 0.4);
+}
+
+.play-pause-btn.paused {
+  background: linear-gradient(135deg, #ff416c, #ff4b2b);
+  box-shadow: 0 4px 12px rgba(255, 75, 43, 0.3);
+}
+
+.play-pause-btn.paused:hover {
+  box-shadow: 0 6px 16px rgba(255, 75, 43, 0.4);
+}
+
+.reset-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+}
+
+.reset-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Убираем старые стили панели управления (если они есть) */
+.animation-controls:not(.animation-controls-overlay .animation-controls) {
+  display: none;
+}
+
+/* Адаптивность для мобильных */
+@media (max-width: 768px) {
+  .animation-controls-overlay {
+    width: calc(100% - 40px);
+    max-width: none;
+    bottom: 10px;
+  }
+  
+  .animation-controls {
+    padding: 15px;
+  }
+  
+  .controls-buttons {
+    flex-direction: column;
+  }
+  
+  .play-pause-btn, .reset-btn {
+    min-width: 100%;
+  }
+}

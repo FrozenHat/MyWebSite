@@ -8,7 +8,7 @@ export {
   createMaterialFromPreset,
   getAvailablePresets,
   getPresetsByCategory
-} from './materialPresets'
+} from './MaterialPresets'
 
 // Быстрые пресеты
 export { Glass, Metal, Plastic, Chrome, Gold } from './MaterialApplier'

@@ -170,7 +170,7 @@ const TextMask = ({
     updateCounterRef.current++;
     
     // Обновляем только каждый 4-й кадр для производительности
-    if (updateCounterRef.current % 4 === 0) {
+    if (updateCounterRef.current % 5 === 0) {
       updateTextMask();
     }
     
