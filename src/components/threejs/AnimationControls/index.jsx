@@ -19,7 +19,7 @@ const AnimationControls = ({ modelRef }) => {
   
   // Обновляем состояние из модели
   const updateState = useCallback(() => {
-    if (modelRef.current) {
+    if (modelRef.current && modelRef.current.getState) {
       const state = modelRef.current.getState();
       setIsPlaying(state.isPlaying);
       setAnimationTime(state.time);
